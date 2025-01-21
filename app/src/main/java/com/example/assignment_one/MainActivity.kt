@@ -36,6 +36,7 @@ class MainActivity : AppCompatActivity() {
             )
 
         val resultText: TextView = findViewById(R.id.textViewResult)
+        val playAgainButton: Button = findViewById(R.id.buttonPlayAgain)
 
         // Set click listeners for all buttons
         for (i in grid.indices) {
@@ -46,6 +47,12 @@ class MainActivity : AppCompatActivity() {
                         if (checkWinner()) {
                             resultText.text = getString(R.string.player_wins, currentPlayer)
                             resultText.visibility = View.VISIBLE
+                            playAgainButton.visibility = View.VISIBLE
+                            gameActive = false
+                        } else if (isDraw()) {
+                            resultText.text = getString(R.string.its_a_draw)
+                            resultText.visibility = View.VISIBLE
+                            playAgainButton.visibility = View.VISIBLE
                             gameActive = false
                         } else {
                             currentPlayer = if (currentPlayer == "X") "O" else "X"
@@ -53,6 +60,11 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+
+        // Play again button resets the game
+        playAgainButton.setOnClickListener {
+            resetGame()
         }
     }
 
@@ -92,5 +104,26 @@ class MainActivity : AppCompatActivity() {
         return winningConditions.any { condition ->
             condition.all { it.text == currentPlayer }
         }
+    }
+
+    private fun isDraw(): Boolean {
+        for (row in grid) {
+            for (button in row) {
+                if (button.text.isEmpty()) return false
+            }
+        }
+        return true
+    }
+
+    private fun resetGame() {
+        for (row in grid) {
+            for (button in row) {
+                button.text = ""
+            }
+        }
+        currentPlayer = "X"
+        gameActive = true
+        findViewById<TextView>(R.id.textViewResult).visibility = View.GONE
+        findViewById<Button>(R.id.buttonPlayAgain).visibility = View.GONE
     }
 }
